@@ -8,6 +8,17 @@ import axios from "axios";
 const TaskCard = ({ index, task, refetch }) => {
   const { _id, addedon, completed, taskName, description, deadline } = task;
   const [isCompleted, setIsCompleted] = useState(completed);
+  let formatedDeadline;
+  if (deadline && deadline !== "Invalid Date") {
+    formatedDeadline = new Date(deadline).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  } else {
+    formatedDeadline = "No deadline specified";
+  }
+  console.log(deadline === "Invalid Date", deadline);
 
   const handleCompleted = async () => {
     const { data } = await axios.put(
@@ -52,7 +63,7 @@ const TaskCard = ({ index, task, refetch }) => {
               ? description.split(" ").splice(0, 20).join(" ") + "....."
               : "No description added"}
           </p>
-          {deadline && (
+          {formatedDeadline && (
             <>
               <p className="sm:px-16 flex items-center text-sm font-semibold text-red-700 my-0 mb-1 gap-x-1">
                 <span className="inline-flex items-center">
@@ -61,7 +72,7 @@ const TaskCard = ({ index, task, refetch }) => {
                 <span className="inline-flex items-center">Deadline</span>
               </p>
               <p className="sm:px-16 flex items-center text-sm font-normal text-dark ml-[2px]">
-                {deadline}
+                {formatedDeadline}
               </p>
             </>
           )}

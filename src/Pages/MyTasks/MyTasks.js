@@ -10,7 +10,7 @@ import TaskCardForm from "./TaskCardForm/TaskCardForm";
 import { useQuery } from "@tanstack/react-query";
 const MyTasks = () => {
   const { dataLoading } = useSelector(selectUser);
-
+  const [taskDeadline, setTaskDeadline] = useState(null);
   const [quickAddHidden, setQuickAddHidden] = useState(true);
   const [clickedOutside, setClickedOutside] = useState(false);
 
@@ -28,6 +28,8 @@ const MyTasks = () => {
       const { data } = await axios.get(
         "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks"
       );
+      console.log(data);
+
       dispatch(setDataLoading({ dataLoading: false }));
       return data;
     },
@@ -77,7 +79,13 @@ const MyTasks = () => {
       </div>
 
       {tasks?.map((t, i) => (
-        <TaskCard key={i} index={i + 1} task={t} refetch={refetch} />
+        <TaskCard
+          key={i}
+          index={i + 1}
+          task={t}
+          refetch={refetch}
+          taskDeadline={taskDeadline}
+        />
       ))}
     </div>
   );

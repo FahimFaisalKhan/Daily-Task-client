@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { async } from "@firebase/util";
 const TaskDetail = () => {
   // const [task, setTask] = useState({});
-  const [dataLoading, setDataLoading] = useState(true);
+
   const [droppedImage, setDroppedImage] = useState("");
   const [date, setDate] = useState(null);
   const [month, setMonth] = useState(null);
@@ -19,7 +19,7 @@ const TaskDetail = () => {
   const [taskDeadline, setTaskDeadline] = useState(null);
   const taskDetailImg = useRef(null);
   const detailTitleRef = useRef(null);
-  const detailDeadlineRef = useRef(null);
+
   const detailDesRef = useRef(null);
   const detailYearlineRef = useRef(null);
   const detailMonthlineRef = useRef(null);

@@ -1,7 +1,9 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { MenuItem } from "./MenuItem";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { logout, signOutUser } from "../../redux/authSlice";
 
 const variants = {
   open: {
@@ -12,14 +14,68 @@ const variants = {
   },
 };
 
-export const SideMenu = ({ isOpen }) => (
+export const SideMenu = ({ isOpen, user, dispatch }) => (
   <motion.ul
     className={` ${isOpen ? "ul nav" : "hidden"} `}
     variants={variants}
   >
-    {itemIds.map((i) => (
-      <MenuItem i={i} key={i} />
-    ))}
+    <Link
+      to={"/"}
+      className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]"
+    >
+      <MenuItem item={"My Tasks"} />
+    </Link>
+    <Link
+      to={"/add"}
+      className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]"
+    >
+      <MenuItem item={"Add Tasks"} />
+    </Link>
+    <Link
+      to={"/completed"}
+      className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]"
+    >
+      {" "}
+      <MenuItem item={"Completed Tasks"} />
+    </Link>
+    <Link
+      to={"/completed"}
+      className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]"
+    >
+      {" "}
+      <MenuItem item={"Completed Tasks"} />
+    </Link>
+    {!user && (
+      <>
+        <Link
+          to={"/signin"}
+          className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]"
+        >
+          {" "}
+          <MenuItem item={"Sign In"} />
+        </Link>
+        <Link
+          to={"/Signup"}
+          className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]"
+        >
+          {" "}
+          <MenuItem item={"Sign up"} />
+        </Link>
+      </>
+    )}
+    {user && (
+      <Link
+        onClick={() => {
+          dispatch(signOutUser());
+          dispatch(logout());
+        }}
+        to={"/"}
+        className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]"
+      >
+        {" "}
+        <MenuItem item={"Sign Out"} />
+      </Link>
+    )}
   </motion.ul>
 );
 

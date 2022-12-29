@@ -11,6 +11,7 @@ import TaskDetail from "../Pages/TaskDetail/TaskDetail";
 import Signup from "../Pages/Signup/Signup";
 import Loading from "./Loading";
 import SignIn from "../Pages/SignIn/SignIn";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,7 +26,14 @@ export const router = createBrowserRouter(
       />
       <Route path="/add" element={<AddTasks />} />
       <Route path="/completed" element={<CompletedTasks />} />
-      <Route path="/detail/:id" element={<TaskDetail />} />
+      <Route
+        path="/detail/:id"
+        element={
+          <PrivateRoute>
+            <TaskDetail />
+          </PrivateRoute>
+        }
+      />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<SignIn />} />
     </Route>

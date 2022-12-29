@@ -4,7 +4,7 @@ import { googleSign, logInUser, selectUser } from "../../redux/authSlice";
 import { MdEmail } from "react-icons/md";
 import ClipLoader from "react-spinners/ClipLoader";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const SignIn = () => {
@@ -12,7 +12,9 @@ const SignIn = () => {
   const { loading, userLoading, googleLoading } = useSelector(selectUser);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const redirectRoute = location.state?.from?.pathname || "/";
   const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -39,7 +41,7 @@ const SignIn = () => {
     const { succeded, error } = await dispatch(googleSign());
     if (succeded) {
       toast.success("Signed in Successfully");
-      navigate("/");
+      navigate(redirectRoute);
     } else {
       toast.error(error);
     }

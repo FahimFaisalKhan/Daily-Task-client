@@ -23,9 +23,7 @@ const variants = {
 
 const colors = ["#FF008C", "#D309E1", "#9C1AFF", "#7700FF", "#4400FF"];
 
-export const MenuItem = ({ i }) => {
-  const dispatch = useDispatch();
-  const style = { border: `2px solid ${colors[i]}` };
+export const MenuItem = ({ item }) => {
   return (
     <motion.li
       className="li"
@@ -33,19 +31,7 @@ export const MenuItem = ({ i }) => {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
     >
-      <Link
-        onClick={
-          i.name === "Sign out" &&
-          (() => {
-            dispatch(signOutUser());
-            dispatch(logout());
-          })
-        }
-        to={i.route}
-        className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-white text-[1rem]"
-      >
-        {i.name}
-      </Link>
+      {item}
     </motion.li>
   );
 };

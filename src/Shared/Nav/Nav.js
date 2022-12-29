@@ -7,6 +7,7 @@ import "./Nav.css";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, selectUser, signOutUser } from "../../redux/authSlice";
+import icon from "../../Static/task-icon.png";
 const sidebar = {
   open: (height = 1000) => ({
     clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
@@ -38,13 +39,9 @@ const Nav = () => {
     <nav className="p-4  border-gray-200  bg-primary">
       <div className="container flex flex-wrap items-center justify-end sm:justify-between mx-auto">
         <a href=" " className="flex items-center">
-          <img
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="h-6 mr-3 sm:h-10"
-            alt="Flowbite Logo"
-          />
+          <img src={icon} className="h-6 mr-3 sm:h-10" alt="Flowbite Logo" />
           <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
-            Flowbite
+            Task Desk
           </span>
         </a>
         <motion.nav
@@ -52,10 +49,10 @@ const Nav = () => {
           animate={isOpen ? "open" : "closed"}
           custom={height}
           ref={containerRef}
-          className="inline-flex items-center p-2  text-sm text-gray-500 rounded-lg md:hidden   "
+          className="inline-flex items-center p-2  text-sm text-gray-500 rounded-lg md:hidden  z-50 "
         >
           <motion.div className="background" variants={sidebar} />
-          <SideMenu isOpen={isOpen} />
+          <SideMenu isOpen={isOpen} user={user} dispatch={dispatch} />
           <MenuToggle toggle={() => toggleOpen()} />
         </motion.nav>
 
