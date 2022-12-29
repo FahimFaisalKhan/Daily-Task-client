@@ -1,0 +1,26 @@
+.transition {
+  background-color: rgb(13, 12, 29, 0.8);
+  animation: anm 0.4s ease-in;
+}
+.center {
+  transform: translate(-50%, -50%);
+}
+
+@keyframes anm {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.rdp-day_selected,
+.rdp-day_selected:focus-visible,
+.rdp-day_selected:hover {
+  color: white;
+  opacity: 1;
+  background-color: #0d0c1d !important;
+}
