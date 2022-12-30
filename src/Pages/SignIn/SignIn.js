@@ -4,13 +4,15 @@ import { googleSign, logInUser, selectUser } from "../../redux/authSlice";
 import { MdEmail } from "react-icons/md";
 import ClipLoader from "react-spinners/ClipLoader";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useMode } from "../../hooks/useMode";
 
 const SignIn = () => {
   const dispatch = useDispatch();
-  const { loading, userLoading, googleLoading } = useSelector(selectUser);
-
+  const { loading, userLoading, googleLoading, darkMode } =
+    useSelector(selectUser);
+  useMode(darkMode);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,42 +50,52 @@ const SignIn = () => {
   };
   console.log(loading);
   return (
-    <div className="container mx-auto my-20 flex flex-col lg:flex-row">
+    <div className="container mx-auto my-20 flex flex-col lg:flex-row   ">
       <div className="w-full lg:w-[48%] md:px-24  lg:px-20 xl:px-32">
-        <h2 className="text-2xl text-dark px-1">Sign up</h2>
+        <h2
+          className={`text-2xl ${
+            darkMode ? "text-light" : "text:dark"
+          } text-center px-1`}
+        >
+          Sign in
+        </h2>
         <form onSubmit={handleSubmit} className="my-8">
-          <div class="mb-6">
+          <div className="mb-6">
             <label
               htmlFor="email"
-              class="block mb-2  font-medium text-gray-900 text-base"
+              className={`block mb-2  font-medium ${
+                darkMode ? "text-light" : "text-dark"
+              } text-base`}
             >
               Email
             </label>
             <input
               type="email"
               name="email"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
               required
             />
           </div>
-          <div class="mb-6">
+          <div className="mb-6">
             <label
-              htmlFor="password"
-              class="block mb-2  font-medium text-gray-900 text-base"
+              htmlFor="email"
+              className={`block mb-2  font-medium ${
+                darkMode ? "text-light" : "text-dark"
+              } text-base`}
             >
               Password
             </label>
             <input
               type="password"
               name="password"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
               required
             />
           </div>
 
           <button
             type="submit"
-            class="mt-6 relative text-white bg-secondary  focus:ring-4 focus:outline-none  font-medium rounded-lg text-base w-full  px-5 py-2.5 text-center inline-flex items-center justify-center"
+            className="mt-6 relative text-white bg-secondary  focus:ring-4 focus:outline-none  font-medium rounded-lg text-base w-full  px-5 py-2.5 text-center inline-flex items-center justify-center"
             disabled={userLoading}
           >
             {userLoading ? (
@@ -99,30 +111,39 @@ const SignIn = () => {
             )}
           </button>
         </form>
-        <p class="text-base font-semibold mt-2 pt-1 mb-0">
-          Dont't have an account?
-          <a
-            href="#!"
-            class="text-red-600 hover:text-red-700 focus:text-red-700  ml-2"
+        <p className="text-base font-semibold mt-2 pt-1 mb-0">
+          <span className={`${darkMode ? "text-light" : "text-dark"}`}>
+            {" "}
+            Don't have an account?
+          </span>
+          <Link
+            to="/signup"
+            className="text-red-600 hover:text-red-700 focus:text-red-700  ml-2"
           >
-            Register
-          </a>
+            register
+          </Link>
         </p>
       </div>
       <div className="w-full lg:w-[4%] min-h-[4rem] flex justify-center items-center ">
         <p className="h-0  lg:h-full w-full lg:w-0 flex justify-center items-center border-b-2 lg:border-b-0 lg:border-l-2 ">
-          <span className="mr-1 bg-white py-2">OR</span>
+          <span
+            className={`mr-1 ${
+              darkMode ? "bg-dark text-light" : "bg-white text-dark"
+            } py-2`}
+          >
+            OR
+          </span>
         </p>
       </div>
       <div className="w-full lg:w-[48%] text-center flex items-center justify-center flex-col">
         <button
           onClick={handleGoogleSignin}
           disabled={googleLoading}
-          class="w-10/12 lg:w-7/12 px-6 py-3  font-semibold text-gray-900 bg-white border-2 border-gray-500 rounded-md shadow outline-none hover:bg-blue-50 hover:border-blue-400 focus:outline-none text-md"
+          className="w-10/12 lg:w-7/12 px-6 py-3  font-semibold text-gray-900 bg-white border-2 border-gray-500 rounded-md shadow outline-none hover:bg-blue-50 hover:border-blue-400 focus:outline-none text-md"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class={`inline w-4 h-4 mr-3 -ml-4 text-gray-900 fill-current ${
+            className={`inline w-4 h-4 mr-3 -ml-4 text-gray-900 fill-current ${
               googleLoading && "hidden"
             }`}
             viewBox="0 0 48 48"
@@ -160,10 +181,10 @@ const SignIn = () => {
         </button>
         <button
           type="button"
-          class="w-10/12 lg:w-7/12 mt-7  text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-[#3b5998]/55  mb-2"
+          className="w-10/12 lg:w-7/12 mt-7  text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-[#3b5998]/55  mb-2"
         >
           <svg
-            class="mr-2 -ml-1 w-4 h-4"
+            className="mr-2 -ml-1 w-4 h-4"
             aria-hidden="true"
             focusable="false"
             data-prefix="fab"
@@ -181,7 +202,7 @@ const SignIn = () => {
         </button>
         <button
           type="button"
-          class="w-10/12 lg:w-7/12 mt-6  text-white bg-primary hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-primary/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-primary/55  mb-2 gap-x-2"
+          className="w-10/12 lg:w-7/12 mt-6  text-white bg-primary hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-primary/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-primary/55  mb-2 gap-x-2"
         >
           <MdEmail className="mr-4 -ml-4" />
           <span> Sign up with Email</span>

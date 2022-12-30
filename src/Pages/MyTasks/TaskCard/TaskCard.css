@@ -4,13 +4,17 @@
   background-color: white;
   border-radius: 50%;
   vertical-align: middle;
-  border: 1px solid rgb(21 128 61);
+  border: 1px solid #161b33;
   appearance: none;
   -webkit-appearance: none;
   outline: none;
   cursor: pointer;
 }
 
+.card:hover .up-btn {
+  background-color: #474973;
+  color: #ffffff;
+}
 .checkbox-round:checked {
-  background-color: rgb(21 128 61);
+  background-color: #000000;
 }

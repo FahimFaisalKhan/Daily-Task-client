@@ -1,23 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
 import loga from "../../Static/loga.png";
 import { MdOutlineDateRange, MdCategory } from "react-icons/md";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../../Shared/Spinner/Spinner";
 import { GiIceBomb } from "react-icons/gi";
 import { toast } from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
-import { async } from "@firebase/util";
+import upload from "../../Static/upload.svg";
+import { selectUser, setLoading } from "../../redux/authSlice";
+import gifloading from "../../Static/loading.gif";
+import { ClipLoader } from "react-spinners";
+import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
+import { RiDeleteBin6Line, RiEdit2Line } from "react-icons/ri";
+import TaskDetailComments from "./TaskDetailComments";
+import { useSelector } from "react-redux";
+import { useMode } from "../../hooks/useMode";
+
 const TaskDetail = () => {
   // const [task, setTask] = useState({});
-
+  const { darkMode } = useSelector(selectUser);
+  useMode(darkMode);
   const [droppedImage, setDroppedImage] = useState("");
   const [date, setDate] = useState(null);
   const [month, setMonth] = useState(null);
   const [year, setYear] = useState(null);
   const [editing, setEditing] = useState(false);
+
   const [taskDeadline, setTaskDeadline] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [savedDisabled, setSavedDisabled] = useState(true);
+  const detailCommentAddRef = useRef(null);
   const taskDetailImg = useRef(null);
+  const taskDetailImgSmall = useRef(null);
+  const checkCompleteRef = useRef(null);
   const detailTitleRef = useRef(null);
 
   const detailDesRef = useRef(null);
@@ -27,7 +44,7 @@ const TaskDetail = () => {
   const param = useParams();
   const id = param?.id;
   const location = useLocation();
-  console.log(location);
+  const navigate = useNavigate();
 
   const {
     isLoading,
@@ -36,9 +53,7 @@ const TaskDetail = () => {
   } = useQuery({
     queryKey: ["task"],
     queryFn: async () => {
-      const { data } = await axios.get(
-        `https://daily-task-server-fahimfaisalkhan.vercel.app/task/${id}`
-      );
+      const { data } = await axios.get(`http://localhost:5000/task/${id}`);
       console.log(data.deadline);
       if (data.deadline) {
         console.log(data.deadline);
@@ -72,15 +87,26 @@ const TaskDetail = () => {
     return date < today;
   }
   const handleSubmit = async () => {
+    setEditing(!editing);
     if (editing) {
+      setUploading(true);
       const id = task._id;
       const taskName = detailTitleRef.current.value;
 
       const description = detailDesRef.current.value;
-      const files = taskDetailImg.current.files;
+      const imageFiles = taskDetailImg.current.files;
+      const filesSmall = taskDetailImgSmall.current.files;
       const year = detailYearlineRef.current.value;
       const month = detailMonthlineRef.current.value;
       const date = detailDatelineRef.current.value;
+      const completed = checkCompleteRef.current.checked;
+      console.log(checkCompleteRef.current.checked);
+      console.log(filesSmall, imageFiles);
+      const files = imageFiles?.length
+        ? [...imageFiles]
+        : filesSmall?.length
+        ? [...filesSmall]
+        : null;
       console.log(
         (year ? `${year}-` : "") +
           (month ? `${month}-` : "") +
@@ -102,7 +128,7 @@ const TaskDetail = () => {
         }
       }
       let image;
-      if (files.length) {
+      if (files?.length) {
         const file = files[0];
         const formData = new FormData();
         formData.append("image", file);
@@ -113,42 +139,155 @@ const TaskDetail = () => {
         image = res.data.data.display_url;
       }
 
-      const { data } = await axios.put(
-        "https://daily-task-server-fahimfaisalkhan.vercel.app/task-update",
-        {
+      try {
+        const { data } = await axios.put("http://localhost:5000/task-update", {
           id,
           taskName,
           description,
           image,
           deadline,
-        }
-      );
+          completed,
+        });
 
-      console.log(taskName, deadline, description, files[0]);
-      if (data.acknowledged) {
-        refetch();
+        if (data.acknowledged) {
+          imageFiles?.current?.reset();
+          filesSmall?.current?.reset();
+          setDroppedImage(null);
+          refetch();
+
+          setUploading(false);
+          setEditing(false);
+        }
+      } catch (err) {
+        console.log(err.message);
+
+        setUploading(false);
+        setEditing(false);
       }
     }
-
-    setEditing(!editing);
+  };
+  const handleDelete = async (id) => {
+    setDeleting(true);
+    try {
+      const { data } = await axios.delete("http://localhost:5000/task", {
+        data: { id },
+      });
+      console.log(data);
+      if (data.acknowledged) {
+        setDeleting(false);
+        navigate("/", { replace: true });
+        toast.success("Task deleted successfully");
+      }
+    } catch (err) {
+      console.log(err.message);
+      toast.error("Something went wrong try deleting again");
+      setDeleting(false);
+    }
+  };
+  const handleEnter = async (event) => {
+    if (event.key === "Enter") {
+      await handleComment();
+    }
   };
 
+  const handleComment = async () => {
+    const comment = detailCommentAddRef.current.value;
+    console.log(comment);
+    if (comment === "") {
+      return;
+    }
+
+    const { data } = await axios.put("http://localhost:5000/add-comment", {
+      id: task._id,
+      comment: comment,
+    });
+
+    if (data.acknowledged) {
+      refetch();
+      setSavedDisabled(true);
+      detailCommentAddRef.current.value = "";
+    }
+  };
+  const handleState = (event) => {
+    console.log(detailCommentAddRef.current.focus());
+    event.target.value === "" ||
+    document.activeElement !== detailCommentAddRef.current
+      ? setSavedDisabled(true)
+      : setSavedDisabled(false);
+  };
   if (isLoading) {
     return <Spinner />;
   }
 
   return (
-    <div>
-      <div class="max-w-7xl flex items-center h-auto lg:h-screen flex-wrap mx-auto my-32 lg:my-0">
+    <div className="my-24">
+      <div className="max-w-7xl flex items-center h-auto lg:h-screen flex-wrap mx-auto my-32 lg:my-0">
         <div
           id="profile"
-          class="w-full lg:w-3/5 rounded-lg lg:rounded-l-lg lg:rounded-r-none shadow-2xl bg-white opacity-75 mx-6 lg:mx-0"
+          className={`w-full lg:w-3/5 rounded-lg lg:rounded-l-lg lg:rounded-r-none shadow-2xl ${
+            darkMode ? "bg-primary" : "bg-white"
+          } opacity-75 ml-4 lg:mx-0`}
         >
-          <div class="p-4 md:p-12 text-center lg:text-left">
-            <div class="block lg:hidden rounded-full shadow-xl mx-auto -mt-16 h-48 w-48 bg-cover bg-center"></div>
+          <div className="p-4 md:p-12 text-center lg:text-left">
+            {!editing ? (
+              <div
+                className="block lg:hidden rounded-sm shadow-xl mx-auto -mt-16 h-52 w-48 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(${task?.image && task?.image})`,
+                  backgroundPosition: "top",
+                }}
+              ></div>
+            ) : (
+              <div
+                className="relative lg:hidden rounded-sm shadow-xl mx-auto -mt-16 h-52 w-48 bg-cover bg-center flex items-end  justify-center "
+                style={{
+                  backgroundImage: `url(${
+                    droppedImage ? droppedImage : upload
+                  })`,
+                  backgroundPosition: "center",
+                  backgroundSize: droppedImage ? 250 : 50,
+                  backgroundRepeat: "no-repeat",
+                }}
+              >
+                <h1 className={`mb-12  ${droppedImage && "opacity-0"}`}>
+                  <span className={`${darkMode ? "text-light" : "text-dark"}`}>
+                    Browse or Drag image file
+                  </span>
+                  <input
+                    ref={taskDetailImgSmall}
+                    accept="image/png, image/gif, image/jpeg"
+                    id="dropzoneFile"
+                    name="dropzoneFile"
+                    type="file"
+                    onChange={(e) => {
+                      const img = URL.createObjectURL(e.target.files[0]);
+                      console.log(img);
+                      setDroppedImage(URL.createObjectURL(e.target.files[0]));
+                    }}
+                    className="block h-52 w-48 absolute top-0  opacity-0 hover:cursor-pointer  max-w-[100%]"
+                  />
+                </h1>
+                {droppedImage && (
+                  <button
+                    onClick={() => {
+                      taskDetailImg.current.value = null;
+                      setDroppedImage("");
+                    }}
+                    type="button"
+                    className="w-8 h-8 text-white bg-secondary font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center justify-center mr-2 absolute -top-3 -right-5 z-20"
+                  >
+                    ✕<span className="sr-only">Icon description</span>
+                  </button>
+                )}
+              </div>
+            )}
 
             {!editing ? (
-              <h1 class="text-3xl font-bold pt-8 lg:pt-0 text-primary">
+              <h1
+                className={`text-3xl font-bold pt-8 lg:pt-0 ${
+                  darkMode ? "text-light" : "text-dark"
+                }`}
+              >
                 {task.taskName ? task.taskName : "No name assigned"}
               </h1>
             ) : (
@@ -158,18 +297,31 @@ const TaskDetail = () => {
                 placeholder="Task name"
                 defaultValue={task.taskName && task.taskName}
                 autoFocus
-                class={`block w-full text-3xl text-gray-900 border border-none rounded-lg 
-             bg-white sm:text-xl focus:outline-none focus:ring-transparent focus:border-transparent 
+                className={`block w-full text-3xl text-primaryborder border-none rounded-sm 
+             ${
+               darkMode ? "bg-primary text-light" : "bg-white text-dark"
+             } sm:text-xl focus:outline-none focus:ring-transparent focus:border-transparent 
              `}
               />
             )}
-            <div class="mx-auto lg:mx-0 w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
-            <p class="pt-4 text-primary font-bold flex text-base items-center justify-center lg:justify-start">
-              <MdOutlineDateRange className="mr-2 w-1/12" />
-              <span className="font-normal mr-2 w-5/12">Added on - </span>{" "}
-              <span className="w-6/12">{task.addedon}</span>
+            <div className="mx-auto lg:mx-0 w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
+            <p
+              className={`pt-4 ${
+                darkMode ? "text-light" : "text-dark"
+              } font-bold flex text-base items-center justify-center lg:justify-start`}
+            >
+              <span></span>
+              <MdOutlineDateRange className="mr-2  lg:w-1/12" />
+              <span className="font-normal mr-2 lg:w-5/12">
+                Added on -{" "}
+              </span>{" "}
+              <span className="lg:w-6/12">{task.addedon}</span>
             </p>
-            <p class="pt-2 text-base text-primary font-bold flex items-center justify-center lg:justify-start ">
+            <p
+              className={`pt-2 text-base ${
+                darkMode ? "text-light" : "text-dark"
+              }  font-bold flex items-center justify-center lg:justify-start `}
+            >
               <GiIceBomb className="mr-2 w-1/12" />
               <span className="font-normal mr-2 w-5/12">Deadline - </span>{" "}
               {!editing ? (
@@ -183,8 +335,12 @@ const TaskDetail = () => {
                     type="text"
                     placeholder="Year"
                     defaultValue={year}
-                    className={`w-10/12 block font-normal  text-gray-900 border-b-2 lg:border-r-2 rounded-sm
-             bg-white text-base focus:outline-none focus:ring-transparent focus:border-transparent 
+                    className={`w-10/12 block font-normal  pl-2  lg:border-l-2 rounded-xs
+             ${
+               darkMode
+                 ? "bg-primary text-light border-white"
+                 : "bg-white text-dark border-primary"
+             } text-base focus:outline-none focus:ring-transparent focus:border-transparent 
              `}
                   />
                   <input
@@ -193,8 +349,12 @@ const TaskDetail = () => {
                     placeholder="Month"
                     defaultValue={month}
                     style={{}}
-                    className={`w-10/12 block font-normal   text-gray-900 border-b-2 lg:border-r-2 rounded-sm 
-             bg-white text-base focus:outline-none focus:ring-transparent focus:border-transparent 
+                    className={`w-10/12 block font-normal  pl-2  lg:border-l-2 rounded-xs
+             ${
+               darkMode
+                 ? "bg-primary text-light border-white"
+                 : "bg-white text-dark border-primary"
+             } text-base focus:outline-none focus:ring-transparent focus:border-transparent 
              `}
                   />
                   <input
@@ -203,15 +363,65 @@ const TaskDetail = () => {
                     placeholder="Date"
                     defaultValue={date}
                     style={{}}
-                    className={`w-10/12 block font-normal   text-gray-900 border-b-2 lg:border-r-2 rounded-sm 
-             bg-white text-base focus:outline-none focus:ring-transparent focus:border-transparent 
-             `}
+                    className={`w-10/12 block font-normal pl-2   lg:border-l-2 rounded-xs
+                    ${
+                      darkMode
+                        ? "bg-primary text-light border-white"
+                        : "bg-white text-dark border-primary"
+                    } text-base focus:outline-none focus:ring-transparent focus:border-transparent 
+                    `}
                   />
                 </span>
               )}
             </p>
+            {!editing ? (
+              <p
+                className={`pt-2  font-bold flex text-base items-center justify-center lg:justify-start`}
+              >
+                {task?.completed ? (
+                  <ImCheckboxChecked
+                    className={`mr-2 w-1/12 ${
+                      darkMode ? "text-light" : "text-dark"
+                    }`}
+                  />
+                ) : (
+                  <ImCheckboxUnchecked
+                    className={`mr-2 w-1/12 ${
+                      darkMode ? "text-light" : "text-dark"
+                    }`}
+                  />
+                )}
+                <span
+                  className={`font-mediummr-2 w-5/12  ${
+                    darkMode ? "text-light" : "text-dark"
+                  }`}
+                >
+                  Completed
+                </span>
+              </p>
+            ) : (
+              <p className="pt-2 text-primary font-bold flex text-base items-center justify-center lg:justify-start">
+                <input
+                  ref={checkCompleteRef}
+                  defaultChecked={task?.completed}
+                  id="checkComplete"
+                  type="checkbox"
+                  className={`mr-2 w-1/12  ${
+                    darkMode ? "accent-light" : "accent-dark"
+                  } cursor-pointer`}
+                />
+                <label
+                  htmlFor="checkComplete"
+                  className={`font-mediummr-2 w-5/12 ${
+                    darkMode ? "text-light" : "text-dark"
+                  } `}
+                >
+                  Completed{" "}
+                </label>{" "}
+              </p>
+            )}
 
-            <p class="pt-8 pl-2 text-sm text-primary">
+            <p className="pt-8 pl-2 text-sm text-primary">
               {!editing ? (
                 <span>
                   {task.description ? task.description : "No description added"}
@@ -222,37 +432,67 @@ const TaskDetail = () => {
                   defaultValue={task.description && task.description}
                   name="description"
                   rows="4"
-                  class="block p-2.5 w-full text-base text-gray-900  rounded-lg border border-gray-300   "
+                  className="block p-2.5 w-full text-base text-primary rounded-lg border border-gray-300   "
                   placeholder="Write task description here..."
                 ></textarea>
               )}
             </p>
 
-            <div class="pt-12 pb-8">
+            <div className="pt-12 pb-8 flex items-center justify-between gap-x-8">
               <button
                 onClick={handleSubmit}
-                class="min-w-[7rem] bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded-full"
+                className={`min-w-[7rem] bg-secondary  text-white font-bold py-2 px-4 rounded-full`}
               >
-                {editing ? "Save" : "Edit"}
+                {uploading ? (
+                  <ClipLoader
+                    color="#a69cac"
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                    loading={true}
+                    size={22}
+                  />
+                ) : editing ? (
+                  "Save"
+                ) : (
+                  "Edit"
+                )}
+              </button>
+              <button
+                onClick={() => handleDelete(task?._id)}
+                className="p-2 bg-red-200 rounded-xl"
+              >
+                {deleting ? (
+                  <ClipLoader
+                    color="#a69cac"
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                    loading={true}
+                    size={22}
+                  />
+                ) : (
+                  <RiDeleteBin6Line size={30} className="text-red-600 " />
+                )}
               </button>
             </div>
           </div>
         </div>
 
-        <div class="lg:w-2/5">
+        <div className="lg:w-2/5">
           {!editing ? (
             <div>
               {task?.image ? (
                 <img
-                  src={task.image}
+                  src={task?.image}
                   id="pro-img"
-                  class="rounded-none lg:rounded-lg shadow-2xl hidden lg:block"
+                  className="rounded-none lg:rounded-lg shadow-2xl hidden lg:block"
                   alt="Task "
                   style={{ height: "32rem", width: "29rem" }}
                 />
               ) : (
                 <div
-                  class="rounded-none lg:rounded-lg shadow-2xl hidden lg:flex justify-center items-center "
+                  className={`rounded-none lg:rounded-lg shadow-2xl hidden lg:flex justify-center items-center ${
+                    darkMode ? "text-light" : "text-dark"
+                  } `}
                   style={{ height: "32rem", width: "29rem" }}
                 >
                   No Task Image Added
@@ -260,20 +500,22 @@ const TaskDetail = () => {
               )}
             </div>
           ) : (
-            <div class=" items-center justify-center w-full hidden lg:flex">
+            <div className=" items-center justify-center w-full hidden lg:flex">
               <label
                 htmlFor="dropzoneFile"
-                class="relative flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 "
+                className={`relative flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer ${
+                  darkMode ? "transparent" : "bg-gray-50"
+                } `}
                 style={{ height: "32rem", width: "29rem" }}
               >
                 <div
-                  class={`flex flex-col items-center justify-center pt-5 pb-6 ${
+                  className={`flex flex-col items-center justify-center pt-5 pb-6 ${
                     droppedImage && "hidden"
                   }`}
                 >
                   <svg
                     aria-hidden="true"
-                    class="w-10 h-10 mb-3 text-gray-400  "
+                    className="w-10 h-10 mb-3 text-gray-400  "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -286,11 +528,11 @@ const TaskDetail = () => {
                       d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                     ></path>
                   </svg>
-                  <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span class="font-semibold">Click to upload</span> or drag
-                    and drop
+                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="font-semibold">Click to upload</span> or
+                    drag and drop
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     SVG, PNG, JPG or GIF
                   </p>
                 </div>
@@ -306,15 +548,15 @@ const TaskDetail = () => {
                       setDroppedImage("");
                     }}
                     type="button"
-                    class="w-8 h-8 text-white bg-secondary font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center justify-center mr-2 absolute -top-3 -right-5 z-20"
+                    className="w-8 h-8 text-white bg-secondary font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center justify-center mr-2 absolute -top-3 -right-5 z-20"
                   >
-                    ✕<span class="sr-only">Icon description</span>
+                    ✕<span className="sr-only">Icon description</span>
                   </button>
                 </div>
 
                 <input
                   ref={taskDetailImg}
-                  class="block w-full h-full absolute top-0  opacity-0  hover:cursor-pointer"
+                  className="block w-full h-full absolute top-0  opacity-0  hover:cursor-pointer"
                   accept="image/png, image/gif, image/jpeg"
                   id="dropzoneFile"
                   name="dropzoneFile"
@@ -335,10 +577,38 @@ const TaskDetail = () => {
           {task.comment?.length ? "Comments" : "No Comments Added"}
         </h2>
         {task?.comment?.map((comment) => (
-          <div class="block  p-6 bg-primary border border-primary rounded-lg shadow-md  ">
-            <p class="font-normal text-white">{comment.comment}</p>
-          </div>
+          <TaskDetailComments
+            comment={comment?.comment}
+            refetch={refetch}
+            id={task._id}
+          />
         ))}
+      </div>
+      <div className="container mx-auto my-6 flex flex-col">
+        <label
+          htmlFor="task-comment"
+          className="block mb-2 text-base font-medium text-gray-900"
+        >
+          Add comment
+        </label>
+        <textarea
+          ref={detailCommentAddRef}
+          onKeyDown={handleEnter}
+          onChange={handleState}
+          name="task-comment"
+          rows="4"
+          className="block p-2.5 w-full text-base text-gray-900  rounded-lg border border-gray-300  "
+          placeholder="Write your comment here..."
+        ></textarea>
+
+        <button
+          onClick={handleComment}
+          disabled={savedDisabled}
+          className={`py-2 px-4 rounded-md self-end mt-3 bg-primary w-1/12 text-white disabled:opacity-70 disabled:text-gray-300`}
+        >
+          {" "}
+          Save
+        </button>
       </div>
     </div>
   );

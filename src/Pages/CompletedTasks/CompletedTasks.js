@@ -1,11 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../redux/authSlice";
 import Spinner from "../../Shared/Spinner/Spinner";
 import TaskCard from "../MyTasks/TaskCard/TaskCard";
 import CompletedTaskCard from "./CompletedTaskCard/CompletedTaskCard";
+import { useMode } from "../../hooks/useMode";
 
 const CompletedTasks = () => {
+  const { darkMode } = useSelector(selectUser);
+  useMode(darkMode);
   const {
     isLoading,
     refetch,
@@ -13,21 +18,16 @@ const CompletedTasks = () => {
   } = useQuery({
     queryKey: ["task-completed"],
     queryFn: async () => {
-      const { data } = await axios.get(
-        "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks-completed"
-      );
+      const { data } = await axios.get("http://localhost:5000/tasks-completed");
       console.log(data);
       return data;
     },
   });
 
   const handleDelete = async (id) => {
-    const { data } = await axios.delete(
-      "https://daily-task-server-fahimfaisalkhan.vercel.app/task",
-      {
-        data: { id },
-      }
-    );
+    const { data } = await axios.delete("http://localhost:5000/task", {
+      data: { id },
+    });
     console.log(data);
     if (data.acknowledged) {
       refetch();
@@ -35,7 +35,7 @@ const CompletedTasks = () => {
   };
   const handleNotCompleted = async (id) => {
     const { data } = await axios.put(
-      "https://daily-task-server-fahimfaisalkhan.vercel.app/task-not-completed",
+      "http://localhost:5000/task-not-completed",
       {
         id,
       }
@@ -60,6 +60,7 @@ const CompletedTasks = () => {
           handleDelete={handleDelete}
           handleNotCompleted={handleNotCompleted}
           refetch={refetch}
+          darkMode={darkMode}
         />
       ))}
     </div>

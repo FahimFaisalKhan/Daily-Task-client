@@ -12,6 +12,7 @@ import Signup from "../Pages/Signup/Signup";
 import Loading from "./Loading";
 import SignIn from "../Pages/SignIn/SignIn";
 import PrivateRoute from "./PrivateRoute";
+import MyMedia from "../Pages/MyMedia/MyMedia";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,13 +20,35 @@ export const router = createBrowserRouter(
       <Route
         path="/"
         element={
-          <Loading>
+          <PrivateRoute>
             <MyTasks />
-          </Loading>
+          </PrivateRoute>
         }
       />
-      <Route path="/add" element={<AddTasks />} />
-      <Route path="/completed" element={<CompletedTasks />} />
+      <Route
+        path="/media"
+        element={
+          <PrivateRoute>
+            <MyMedia />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/add"
+        element={
+          <PrivateRoute>
+            <AddTasks />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/completed"
+        element={
+          <PrivateRoute>
+            <CompletedTasks />
+          </PrivateRoute>
+        }
+      />
       <Route
         path="/detail/:id"
         element={

@@ -8,12 +8,13 @@ import TaskCard from "./TaskCard/TaskCard";
 import { AiOutlinePlus } from "react-icons/ai";
 import TaskCardForm from "./TaskCardForm/TaskCardForm";
 import { useQuery } from "@tanstack/react-query";
+import { useMode } from "../../hooks/useMode";
 const MyTasks = () => {
-  const { dataLoading } = useSelector(selectUser);
+  const { dataLoading, darkMode } = useSelector(selectUser);
   const [taskDeadline, setTaskDeadline] = useState(null);
   const [quickAddHidden, setQuickAddHidden] = useState(true);
   const [clickedOutside, setClickedOutside] = useState(false);
-
+  useMode(darkMode);
   const dispatch = useDispatch();
 
   const quickAddRef = useRef(null);
@@ -25,9 +26,7 @@ const MyTasks = () => {
   } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
-      const { data } = await axios.get(
-        "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks"
-      );
+      const { data } = await axios.get("http://localhost:5000/tasks");
       console.log(data);
 
       dispatch(setDataLoading({ dataLoading: false }));
@@ -50,6 +49,7 @@ const MyTasks = () => {
       };
     }
   }, [quickAddHidden]);
+
   if (dataLoading || isLoading) {
     return <Spinner />;
   }
@@ -63,7 +63,7 @@ const MyTasks = () => {
           setQuickAddHidden(false);
         }}
         type="button"
-        class="text-white bg-primary hover:bg-secondary focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2"
+        className="text-white bg-primary hover:bg-secondary focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2"
       >
         <AiOutlinePlus className="text-light mr-2" /> Quick Add
       </button>

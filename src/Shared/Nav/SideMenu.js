@@ -4,6 +4,7 @@ import { MenuItem } from "./MenuItem";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logout, signOutUser } from "../../redux/authSlice";
+import ModeToggleBtn from "./ModeToggleBtn/ModeToggleBtn";
 
 const variants = {
   open: {
@@ -76,6 +77,10 @@ export const SideMenu = ({ isOpen, user, dispatch }) => (
         <MenuItem item={"Sign Out"} />
       </Link>
     )}
+    <Link className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-primary text-[1rem]">
+      {" "}
+      <MenuItem item={<ModeToggleBtn />} />
+    </Link>
   </motion.ul>
 );
 

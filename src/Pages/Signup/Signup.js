@@ -4,15 +4,17 @@ import { googleSign, selectUser, signUpUser } from "../../redux/authSlice";
 import { MdEmail } from "react-icons/md";
 import ClipLoader from "react-spinners/ClipLoader";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useMode } from "../../hooks/useMode";
 
 const Signup = () => {
   const inputImg = useRef(null);
   const dispatch = useDispatch();
-  const { loading, userLoading, googleLoading } = useSelector(selectUser);
+  const { loading, userLoading, googleLoading, darkMode } =
+    useSelector(selectUser);
   const [droppedImage, setDroppedImage] = useState("");
-
+  useMode(darkMode);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -50,65 +52,79 @@ const Signup = () => {
   return (
     <div className="container mx-auto my-20 flex flex-col lg:flex-row">
       <div className="w-full lg:w-[48%] md:px-24  lg:px-20 xl:px-32">
-        <h2 className="text-2xl text-dark px-1">Sign up</h2>
+        <h2
+          className={`text-2xl ${
+            darkMode ? "text-light" : "text:dark"
+          } text-center px-1`}
+        >
+          Sign up
+        </h2>
         <form onSubmit={handleSubmit} className="my-8">
-          <div class="mb-6">
+          <div className="mb-6">
             <label
               htmlFor="name"
-              class="block mb-2  font-medium text-gray-900 text-base"
+              className={`block mb-2  font-medium ${
+                darkMode ? "text-light" : "text-dark"
+              } text-base`}
             >
               Name
             </label>
             <input
               type="text"
               name="name"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
               required
             />
           </div>
-          <div class="mb-6">
+          <div className="mb-6">
             <label
               htmlFor="email"
-              class="block mb-2  font-medium text-gray-900 text-base"
+              className={`block mb-2  font-medium ${
+                darkMode ? "text-light" : "text-dark"
+              } text-base`}
             >
               Email
             </label>
             <input
               type="email"
               name="email"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
               required
             />
           </div>
-          <div class="mb-6">
+          <div className="mb-6">
             <label
               htmlFor="password"
-              class="block mb-2  font-medium text-gray-900 text-base"
+              className={`block mb-2  font-medium ${
+                darkMode ? "text-light" : "text-dark"
+              } text-base`}
             >
               Password
             </label>
             <input
               type="password"
               name="password"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
               required
             />
           </div>
 
           <div className="mt-14 mb-12">
-            <div class="flex items-center justify-center w-full ">
+            <div className="flex items-center justify-center w-full ">
               <label
                 htmlFor="dropzoneFile"
-                class="relative flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 "
+                className={`relative flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer ${
+                  darkMode ? "bg-transparent" : "bg-gray-50 "
+                }`}
               >
                 <div
-                  class={`flex flex-col items-center justify-center pt-5 pb-6 ${
+                  className={`flex flex-col items-center justify-center pt-5 pb-6 ${
                     droppedImage && "hidden"
                   }`}
                 >
                   <svg
                     aria-hidden="true"
-                    class="w-10 h-10 mb-3 text-gray-400  "
+                    className="w-10 h-10 mb-3 text-gray-400  "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -121,11 +137,11 @@ const Signup = () => {
                       d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                     ></path>
                   </svg>
-                  <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span class="font-semibold">Click to upload</span> or drag
-                    and drop
+                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="font-semibold">Click to upload</span> or
+                    drag and drop
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     SVG, PNG, JPG or GIF
                   </p>
                 </div>
@@ -141,15 +157,15 @@ const Signup = () => {
                       setDroppedImage("");
                     }}
                     type="button"
-                    class="w-8 h-8 text-white bg-secondary font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center justify-center mr-2 absolute -top-3 -right-5 z-20"
+                    className="w-8 h-8 text-white bg-secondary font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center justify-center mr-2 absolute -top-3 -right-5 z-20"
                   >
-                    ✕<span class="sr-only">Icon description</span>
+                    ✕<span className="sr-only">Icon description</span>
                   </button>
                 </div>
 
                 <input
                   ref={inputImg}
-                  class="block w-full h-full absolute top-0  opacity-0  hover:cursor-pointer"
+                  className="block w-full h-full absolute top-0  opacity-0  hover:cursor-pointer"
                   id="dropzoneFile"
                   name="dropzoneFile"
                   type="file"
@@ -165,7 +181,7 @@ const Signup = () => {
 
           <button
             type="submit"
-            class="relative text-white bg-secondary  focus:ring-4 focus:outline-none  font-medium rounded-lg text-base w-full  px-5 py-2.5 text-center inline-flex items-center justify-center"
+            className="relative text-white bg-secondary  focus:ring-4 focus:outline-none  font-medium rounded-lg text-base w-full  px-5 py-2.5 text-center inline-flex items-center justify-center"
             disabled={userLoading}
           >
             {userLoading ? (
@@ -181,30 +197,39 @@ const Signup = () => {
             )}
           </button>
         </form>
-        <p class="text-base font-semibold mt-2 pt-1 mb-0">
-          Already have an account?
-          <a
-            href="#!"
-            class="text-red-600 hover:text-red-700 focus:text-red-700  ml-2"
+        <p className="text-base font-semibold mt-2 pt-1 mb-0">
+          <span className={`${darkMode ? "text-light" : "text-dark"}`}>
+            {" "}
+            Already have an account?
+          </span>
+          <Link
+            to="/signin"
+            className="text-red-600 hover:text-red-700 focus:text-red-700  ml-2"
           >
             Login
-          </a>
+          </Link>
         </p>
       </div>
       <div className="w-full lg:w-[4%] min-h-[4rem] flex justify-center items-center ">
         <p className="h-0  lg:h-full w-full lg:w-0 flex justify-center items-center border-b-2 lg:border-b-0 lg:border-l-2 ">
-          <span className="mr-1 bg-white py-2">OR</span>
+          <span
+            className={`mr-1 ${
+              darkMode ? "bg-dark text-light" : "bg-white text-dark"
+            } py-2`}
+          >
+            OR
+          </span>
         </p>
       </div>
       <div className="w-full lg:w-[48%] text-center flex items-center justify-center flex-col">
         <button
           onClick={handleGoogleSignin}
           disabled={googleLoading}
-          class="w-10/12 lg:w-7/12 px-6 py-3  font-semibold text-gray-900 bg-white border-2 border-gray-500 rounded-md shadow outline-none hover:bg-blue-50 hover:border-blue-400 focus:outline-none text-md"
+          className="w-10/12 lg:w-7/12 px-6 py-3  font-semibold text-gray-900 bg-white border-2 border-gray-500 rounded-md shadow outline-none hover:bg-blue-50 hover:border-blue-400 focus:outline-none text-md"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class={`inline w-4 h-4 mr-3 -ml-4 text-gray-900 fill-current ${
+            className={`inline w-4 h-4 mr-3 -ml-4 text-gray-900 fill-current ${
               googleLoading && "hidden"
             }`}
             viewBox="0 0 48 48"
@@ -242,10 +267,10 @@ const Signup = () => {
         </button>
         <button
           type="button"
-          class="w-10/12 lg:w-7/12 mt-7  text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-[#3b5998]/55  mb-2"
+          className="w-10/12 lg:w-7/12 mt-7  text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-[#3b5998]/55  mb-2"
         >
           <svg
-            class="mr-2 -ml-1 w-4 h-4"
+            className="mr-2 -ml-1 w-4 h-4"
             aria-hidden="true"
             focusable="false"
             data-prefix="fab"
@@ -263,7 +288,7 @@ const Signup = () => {
         </button>
         <button
           type="button"
-          class="w-10/12 lg:w-7/12 mt-6  text-white bg-primary hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-primary/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-primary/55  mb-2 gap-x-2"
+          className="w-10/12 lg:w-7/12 mt-6  text-white bg-primary hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-primary/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-primary/55  mb-2 gap-x-2"
         >
           <MdEmail className="mr-4 -ml-4" />
           <span> Sign up with Email</span>

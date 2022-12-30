@@ -6,8 +6,14 @@ import { SideMenu } from "./SideMenu";
 import "./Nav.css";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, selectUser, signOutUser } from "../../redux/authSlice";
+import {
+  logout,
+  selectUser,
+  setDarkMode,
+  signOutUser,
+} from "../../redux/authSlice";
 import icon from "../../Static/task-icon.png";
+import ModeToggleBtn from "./ModeToggleBtn/ModeToggleBtn";
 const sidebar = {
   open: (height = 1000) => ({
     clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
@@ -28,10 +34,11 @@ const sidebar = {
   },
 };
 const Nav = () => {
-  const { user, loading } = useSelector(selectUser);
-  console.log(user, loading);
-  const dispatch = useDispatch();
+  const { user, loading, darkMode } = useSelector(selectUser);
 
+  const dispatch = useDispatch();
+  // dispatch(setDarkMode({ darkMode: true }));
+  console.log(darkMode);
   const [isOpen, toggleOpen] = useCycle(false, true);
   const containerRef = useRef(null);
   const { height } = useDimensions(containerRef);
@@ -51,7 +58,7 @@ const Nav = () => {
           ref={containerRef}
           className="inline-flex items-center p-2  text-sm text-gray-500 rounded-lg md:hidden  z-50 "
         >
-          <motion.div className="background" variants={sidebar} />
+          <motion.div className="ham-background" variants={sidebar} />
           <SideMenu isOpen={isOpen} user={user} dispatch={dispatch} />
           <MenuToggle toggle={() => toggleOpen()} />
         </motion.nav>
@@ -64,6 +71,14 @@ const Nav = () => {
                 className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-white text-[1rem]"
               >
                 My Tasks
+              </Link>
+            </li>
+            <li>
+              <Link
+                to={"/media"}
+                className="block py-2 pl-3 pr-4  rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-gray-400 md:p-0 text-white text-[1rem]"
+              >
+                My Media
               </Link>
             </li>
             <li>
@@ -116,6 +131,11 @@ const Nav = () => {
                 </Link>
               </li>
             )}
+            <li>
+              <Link className="text-transparent bg-transparent">
+                <ModeToggleBtn />
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

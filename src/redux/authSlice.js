@@ -22,6 +22,7 @@ const initialState = {
   userLoading: false,
   googleLoading: false,
   dataLoading: true,
+  darkMode: false,
 };
 
 export const authSlice = createSlice({
@@ -59,6 +60,9 @@ export const authSlice = createSlice({
     setDataLoading: (state, { payload }) => {
       state.dataLoading = payload.dataLoading;
     },
+    setDarkMode: (state, { payload }) => {
+      state.darkMode = payload.darkMode;
+    },
   },
 });
 
@@ -74,6 +78,7 @@ export const {
   setUserLoading,
   setGoogleLoading,
   setDataLoading,
+  setDarkMode,
 } = authSlice.actions;
 
 export const authListener = () => async (dispatch) => {
@@ -166,7 +171,8 @@ export const selectUser = (state) => {
   const userLoading = state.userAuth.userLoading;
   const googleLoading = state.userAuth.googleLoading;
   const dataLoading = state.userAuth.dataLoading;
-  return { user, loading, userLoading, googleLoading, dataLoading };
+  const darkMode = state.userAuth.darkMode;
+  return { user, loading, userLoading, googleLoading, dataLoading, darkMode };
 };
 
 export default authSlice.reducer;
