@@ -14,7 +14,9 @@ const MyMedia = () => {
   const { data: images, isLoading } = useQuery({
     queryKey: ["task-images"],
     queryFn: async () => {
-      const { data } = await axios.get("http://localhost:5000/task-images");
+      const { data } = await axios.get(
+        "https://daily-task-server-fahimfaisalkhan.vercel.app/task-images"
+      );
       return data;
     },
   });

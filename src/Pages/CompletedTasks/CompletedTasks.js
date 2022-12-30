@@ -18,16 +18,21 @@ const CompletedTasks = () => {
   } = useQuery({
     queryKey: ["task-completed"],
     queryFn: async () => {
-      const { data } = await axios.get("http://localhost:5000/tasks-completed");
+      const { data } = await axios.get(
+        "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks-completed"
+      );
       console.log(data);
       return data;
     },
   });
 
   const handleDelete = async (id) => {
-    const { data } = await axios.delete("http://localhost:5000/task", {
-      data: { id },
-    });
+    const { data } = await axios.delete(
+      "https://daily-task-server-fahimfaisalkhan.vercel.app/task",
+      {
+        data: { id },
+      }
+    );
     console.log(data);
     if (data.acknowledged) {
       refetch();
@@ -35,7 +40,7 @@ const CompletedTasks = () => {
   };
   const handleNotCompleted = async (id) => {
     const { data } = await axios.put(
-      "http://localhost:5000/task-not-completed",
+      "https://daily-task-server-fahimfaisalkhan.vercel.app/task-not-completed",
       {
         id,
       }

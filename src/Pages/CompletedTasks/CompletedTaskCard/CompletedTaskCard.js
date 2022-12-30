@@ -25,10 +25,13 @@ const CompletedTaskCard = ({
     const comment = completedCommentAddRef.current.value;
     console.log(comment);
 
-    const { data } = await axios.put("http://localhost:5000/add-comment", {
-      id: task._id,
-      comment: comment,
-    });
+    const { data } = await axios.put(
+      "https://daily-task-server-fahimfaisalkhan.vercel.app/add-comment",
+      {
+        id: task._id,
+        comment: comment,
+      }
+    );
 
     if (data.acknowledged) {
       refetch();
@@ -130,7 +133,7 @@ const CompletedTaskCard = ({
           <button
             onClick={handleComment}
             disabled={savedDisabled}
-            className={`py-2 px-4 rounded-md self-end mt-3 bg-primary w-1/12 text-white disabled:opacity-70 disabled:text-gray-300`}
+            className={`py-2 px-4 rounded-md self-end mt-3 bg-primary lg:w-1/12 text-white disabled:opacity-70 disabled:text-gray-300`}
           >
             {" "}
             Save

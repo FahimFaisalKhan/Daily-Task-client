@@ -28,9 +28,12 @@ const TaskCardForm = ({
       if (title) {
         setAdding(true);
         try {
-          const { data } = await axios.post("http://localhost:5000/tasks", {
-            taskName: title,
-          });
+          const { data } = await axios.post(
+            "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks",
+            {
+              taskName: title,
+            }
+          );
 
           if (data.acknowledged) {
             setCurrentlyAddingId(data.insertedId);
@@ -64,13 +67,16 @@ const TaskCardForm = ({
             console.log(res);
             const image = res.data.data.display_url;
             axios
-              .put("http://localhost:5000/tasks", {
-                taskName: titleRef.current.value,
-                description: desRef.current.value,
-                image: image,
-                deadline: deadline,
-                id: currentlyAddingId,
-              })
+              .put(
+                "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks",
+                {
+                  taskName: titleRef.current.value,
+                  description: desRef.current.value,
+                  image: image,
+                  deadline: deadline,
+                  id: currentlyAddingId,
+                }
+              )
               .then(({ data }) => {
                 console.log(data);
                 setQuickAddHidden(true);
@@ -90,7 +96,7 @@ const TaskCardForm = ({
           });
       } else {
         axios
-          .put("http://localhost:5000/tasks", {
+          .put("https://daily-task-server-fahimfaisalkhan.vercel.app/tasks", {
             taskName: titleRef.current.value,
             description: desRef.current.value,
 
@@ -143,7 +149,7 @@ const TaskCardForm = ({
             type="text"
             placeholder="Title"
             autoFocus
-            className={`block w-full p-3 text-gray-900 border border-none rounded-lg 
+            class={`block w-full p-3 text-gray-900 border border-none rounded-lg 
              bg-white sm:text-xl focus:outline-none focus:ring-transparent focus:border-transparent 
              ${addingTask && "hidden"} `}
           />
@@ -151,7 +157,7 @@ const TaskCardForm = ({
             ref={desRef}
             type="text"
             placeholder="Description"
-            className="block w-full px-3 py-2  text-gray-900 border border-none rounded-lg
+            class="block w-full px-3 py-2  text-gray-900 border border-none rounded-lg
              bg-white sm:text-base focus:outline-none focus:ring-transparent focus:border-transparent 
              "
           />
@@ -214,9 +220,9 @@ const TaskCardForm = ({
               <button
                 onClick={() => setModalHidden(true)}
                 type="button"
-                className="w-8 h-8 text-white bg-primary font-medium rounded-full text-sm p-5 text-center inline-flex items-center justify-center mr-2 absolute -top-3 -right-5 z-20"
+                class="w-8 h-8 text-white bg-primary font-medium rounded-full text-sm p-5 text-center inline-flex items-center justify-center mr-2 absolute -top-4 right-7 sm:right-1 lg:-top-3 lg:-right-5 z-20"
               >
-                ✕<span className="sr-only">Icon description</span>
+                ✕<span class="sr-only">Icon description</span>
               </button>
             </div>
           </div>

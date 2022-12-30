@@ -11,9 +11,7 @@ const ModeToggleBtn = () => {
     await dispatch(setDarkMode({ darkMode: !currentModeIsDark }));
     setCurrentModeIsDark(!currentModeIsDark);
   };
-  useEffect(() => {
-    console.log("Current mode is dark: ", darkMode);
-  }, [darkMode]);
+
   return (
     <div className="scale-[.3] h-5 w-20">
       <input

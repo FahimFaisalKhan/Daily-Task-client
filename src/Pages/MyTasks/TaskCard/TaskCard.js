@@ -28,9 +28,12 @@ const TaskCard = ({ index, task, refetch }) => {
   const handleCompleted = async () => {
     setCompleting(true);
     try {
-      const { data } = await axios.put("http://localhost:5000/task-completed", {
-        id: _id,
-      });
+      const { data } = await axios.put(
+        "https://daily-task-server-fahimfaisalkhan.vercel.app/task-completed",
+        {
+          id: _id,
+        }
+      );
 
       if (data.modifiedCount > 0) {
         refetch();
@@ -45,9 +48,12 @@ const TaskCard = ({ index, task, refetch }) => {
   const handleDelete = async (id) => {
     setDeleting(true);
     try {
-      const { data } = await axios.delete("http://localhost:5000/task", {
-        data: { id },
-      });
+      const { data } = await axios.delete(
+        "https://daily-task-server-fahimfaisalkhan.vercel.app/task",
+        {
+          data: { id },
+        }
+      );
       console.log(data);
       if (data.acknowledged) {
         refetch();

@@ -53,7 +53,9 @@ const TaskDetail = () => {
   } = useQuery({
     queryKey: ["task"],
     queryFn: async () => {
-      const { data } = await axios.get(`http://localhost:5000/task/${id}`);
+      const { data } = await axios.get(
+        `https://daily-task-server-fahimfaisalkhan.vercel.app/task/${id}`
+      );
       console.log(data.deadline);
       if (data.deadline) {
         console.log(data.deadline);
@@ -140,14 +142,17 @@ const TaskDetail = () => {
       }
 
       try {
-        const { data } = await axios.put("http://localhost:5000/task-update", {
-          id,
-          taskName,
-          description,
-          image,
-          deadline,
-          completed,
-        });
+        const { data } = await axios.put(
+          "https://daily-task-server-fahimfaisalkhan.vercel.app/task-update",
+          {
+            id,
+            taskName,
+            description,
+            image,
+            deadline,
+            completed,
+          }
+        );
 
         if (data.acknowledged) {
           imageFiles?.current?.reset();
@@ -169,9 +174,12 @@ const TaskDetail = () => {
   const handleDelete = async (id) => {
     setDeleting(true);
     try {
-      const { data } = await axios.delete("http://localhost:5000/task", {
-        data: { id },
-      });
+      const { data } = await axios.delete(
+        "https://daily-task-server-fahimfaisalkhan.vercel.app/task",
+        {
+          data: { id },
+        }
+      );
       console.log(data);
       if (data.acknowledged) {
         setDeleting(false);
@@ -197,10 +205,13 @@ const TaskDetail = () => {
       return;
     }
 
-    const { data } = await axios.put("http://localhost:5000/add-comment", {
-      id: task._id,
-      comment: comment,
-    });
+    const { data } = await axios.put(
+      "https://daily-task-server-fahimfaisalkhan.vercel.app/add-comment",
+      {
+        id: task._id,
+        comment: comment,
+      }
+    );
 
     if (data.acknowledged) {
       refetch();
@@ -421,7 +432,11 @@ const TaskDetail = () => {
               </p>
             )}
 
-            <p className="pt-8 pl-2 text-sm text-primary">
+            <p
+              className={`pt-8 pl-2 text-sm ${
+                darkMode ? "text-light" : "text-dark"
+              }`}
+            >
               {!editing ? (
                 <span>
                   {task.description ? task.description : "No description added"}
@@ -573,7 +588,9 @@ const TaskDetail = () => {
         </div>
       </div>
       <div className="container mx-auto flex flex-col gap-y-4">
-        <h2 className="text-2xl text-dark px-1">
+        <h2
+          className={`text-2xl ${darkMode ? "text-light" : "text-dark"} px-1`}
+        >
           {task.comment?.length ? "Comments" : "No Comments Added"}
         </h2>
         {task?.comment?.map((comment) => (
@@ -587,7 +604,9 @@ const TaskDetail = () => {
       <div className="container mx-auto my-6 flex flex-col">
         <label
           htmlFor="task-comment"
-          className="block mb-2 text-base font-medium text-gray-900"
+          className={`block mb-2 text-base font-medium ${
+            darkMode ? "text-tertiary" : "text-dark"
+          }`}
         >
           Add comment
         </label>
@@ -604,7 +623,9 @@ const TaskDetail = () => {
         <button
           onClick={handleComment}
           disabled={savedDisabled}
-          className={`py-2 px-4 rounded-md self-end mt-3 bg-primary w-1/12 text-white disabled:opacity-70 disabled:text-gray-300`}
+          className={`py-2 px-4 rounded-md self-end mt-3 ${
+            !darkMode ? "bg-primary  text-white" : "bg-tertiary text-dark"
+          } disabled:opacity-70 disabled:text-gray-300`}
         >
           {" "}
           Save

@@ -22,7 +22,7 @@ const initialState = {
   userLoading: false,
   googleLoading: false,
   dataLoading: true,
-  darkMode: false,
+  darkMode: true,
 };
 
 export const authSlice = createSlice({

@@ -26,7 +26,9 @@ const MyTasks = () => {
   } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
-      const { data } = await axios.get("http://localhost:5000/tasks");
+      const { data } = await axios.get(
+        "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks"
+      );
       console.log(data);
 
       dispatch(setDataLoading({ dataLoading: false }));

@@ -25,11 +25,14 @@ const TaskDetailComments = ({ comment, refetch, id }) => {
   const handleComment = async () => {
     const updatedComment = detailCommentRef?.current?.value;
 
-    const { data } = await axios.put("http://localhost:5000/update-comment", {
-      id: id,
-      commentToUpdate: comment,
-      updatedComment: updatedComment,
-    });
+    const { data } = await axios.put(
+      "https://daily-task-server-fahimfaisalkhan.vercel.app/update-comment",
+      {
+        id: id,
+        commentToUpdate: comment,
+        updatedComment: updatedComment,
+      }
+    );
 
     if (data.acknowledged) {
       refetch();
@@ -41,7 +44,7 @@ const TaskDetailComments = ({ comment, refetch, id }) => {
     setDeleting(true);
     try {
       const { data } = await axios.delete(
-        "http://localhost:5000/delete-comment",
+        "https://daily-task-server-fahimfaisalkhan.vercel.app/delete-comment",
         {
           data: { id, commentToDelete: comment },
         }
