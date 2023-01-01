@@ -9,13 +9,13 @@ import Spinner from "../../Shared/Spinner/Spinner";
 import loga from "../../Static/loga.png";
 
 const MyMedia = () => {
-  const { darkMode } = useSelector(selectUser);
+  const { darkMode, user } = useSelector(selectUser);
   useMode(darkMode);
   const { data: images, isLoading } = useQuery({
     queryKey: ["task-images"],
     queryFn: async () => {
       const { data } = await axios.get(
-        "https://daily-task-server-fahimfaisalkhan.vercel.app/task-images"
+        `https://daily-task-server-fahimfaisalkhan.vercel.app/task-images?email=${user?.email}`
       );
       return data;
     },

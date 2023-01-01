@@ -9,7 +9,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { useMode } from "../../hooks/useMode";
 import { selectUser } from "../../redux/authSlice";
 const AddTasks = () => {
-  const { darkMode } = useSelector(selectUser);
+  const { darkMode, user } = useSelector(selectUser);
   useMode(darkMode);
   const [adding, setAdding] = useState(false);
   const [droppedImage, setDroppedImage] = useState("");
@@ -24,6 +24,7 @@ const AddTasks = () => {
     const taskName = form.name.value;
 
     const description = form.description.value;
+    const userEmail = user?.email;
     try {
       let image;
       const file = form.dropzoneFile.files[0];
@@ -48,6 +49,7 @@ const AddTasks = () => {
           description,
           image,
           deadline,
+          userEmail,
         }
       );
 

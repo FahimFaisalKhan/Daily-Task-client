@@ -10,7 +10,7 @@ import TaskCardForm from "./TaskCardForm/TaskCardForm";
 import { useQuery } from "@tanstack/react-query";
 import { useMode } from "../../hooks/useMode";
 const MyTasks = () => {
-  const { dataLoading, darkMode } = useSelector(selectUser);
+  const { dataLoading, darkMode, user } = useSelector(selectUser);
   const [taskDeadline, setTaskDeadline] = useState(null);
   const [quickAddHidden, setQuickAddHidden] = useState(true);
   const [clickedOutside, setClickedOutside] = useState(false);
@@ -27,7 +27,7 @@ const MyTasks = () => {
     queryKey: ["tasks"],
     queryFn: async () => {
       const { data } = await axios.get(
-        "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks"
+        `https://daily-task-server-fahimfaisalkhan.vercel.app/tasks?email=${user?.email}`
       );
       console.log(data);
 

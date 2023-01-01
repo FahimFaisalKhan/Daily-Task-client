@@ -6,6 +6,8 @@ import { MdAttachFile } from "react-icons/md";
 import "./TaskCardForm.css";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../../redux/authSlice";
 
 const TaskCardForm = ({
   clickedOutside,
@@ -13,6 +15,7 @@ const TaskCardForm = ({
   refetch,
   setClickedOutside,
 }) => {
+  const { user } = useSelector(selectUser);
   const fileRef = useRef(null);
   const desRef = useRef(null);
   const titleRef = useRef(null);
@@ -24,7 +27,7 @@ const TaskCardForm = ({
   const handleTitle = async (event) => {
     if (event.key === "Enter") {
       const title = event.target.value;
-
+      const userEmail = user?.email;
       if (title) {
         setAdding(true);
         try {
@@ -32,6 +35,7 @@ const TaskCardForm = ({
             "https://daily-task-server-fahimfaisalkhan.vercel.app/tasks",
             {
               taskName: title,
+              userEmail,
             }
           );
 
@@ -54,9 +58,10 @@ const TaskCardForm = ({
       setAdding(true);
       const deadline = new Date(selectedDay);
       const files = fileRef.current.files;
-
+      const userEmail = user?.email;
       if (files.length) {
         const formData = new FormData();
+
         formData.append("image", files[0]);
         axios
           .post(
@@ -75,6 +80,7 @@ const TaskCardForm = ({
                   image: image,
                   deadline: deadline,
                   id: currentlyAddingId,
+                  userEmail,
                 }
               )
               .then(({ data }) => {
@@ -102,6 +108,7 @@ const TaskCardForm = ({
 
             deadline: deadline,
             id: currentlyAddingId,
+            userEmail,
           })
           .then(({ data }) => {
             console.log(data);
@@ -123,6 +130,7 @@ const TaskCardForm = ({
     selectedDay,
     setQuickAddHidden,
     refetch,
+    user?.email,
   ]);
   return (
     <div className="mt-12 mb-16">
