@@ -56,7 +56,13 @@ const CompletedTasks = () => {
   }
   return (
     <div className="container mx-auto my-20">
-      <h2 className="text-2xl text-dark px-1">Completed Tasks</h2>
+      <h2
+        className={`text-2xl ${
+          darkMode ? "text-light" : "text-dark"
+        } font-semibold px-1 ${tasks.length < 1 && "text-center"}`}
+      >
+        {tasks.length < 1 ? "No Completed Tasks!" : "Completed Tasks"}
+      </h2>
       {tasks.map((t, i) => (
         <CompletedTaskCard
           key={i}

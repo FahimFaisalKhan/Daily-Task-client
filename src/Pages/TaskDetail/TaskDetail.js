@@ -319,34 +319,38 @@ const TaskDetail = () => {
             <p
               className={`pt-4 ${
                 darkMode ? "text-light" : "text-dark"
-              } font-bold flex text-base items-center justify-center lg:justify-start`}
+              } font-bold flex text-base items-center justify-between flex-col sm:flex-row mb-5 sm:mb-[auto]`}
             >
-              <span></span>
-              <MdOutlineDateRange className="mr-2  lg:w-1/12" />
-              <span className="font-normal mr-2 lg:w-5/12">
-                Added on -{" "}
-              </span>{" "}
-              <span className="lg:w-6/12">{task.addedon}</span>
+              {" "}
+              <div className="flex  w-full sm:w-6/12 ml-5 items-center ">
+                <MdOutlineDateRange className="mr-7  " />
+                <span className="font-normal  ">Added on - </span>{" "}
+              </div>
+              <span className="w-full sm:w-6/12 text-start ml-5 sm:ml-[auto] mt-3 sm:mt-[auto]">
+                {task.addedon}
+              </span>
             </p>
             <p
               className={`pt-2 text-base ${
                 darkMode ? "text-light" : "text-dark"
-              }  font-bold flex items-center justify-center lg:justify-start `}
+              }  font-bold flex items-center justify-between flex-col sm:flex-row mb-5 sm:mb-[auto]`}
             >
-              <GiIceBomb className="mr-2 w-1/12" />
-              <span className="font-normal mr-2 w-5/12">Deadline - </span>{" "}
+              <div className="flex  items-center w-full  sm:w-6/12 ml-5">
+                <GiIceBomb className="mr-7 " />
+                <span className="font-normal mr-2 ">Deadline - </span>{" "}
+              </div>
               {!editing ? (
-                <span className="w-6/12">
+                <span className="w-full ml-5 sm:ml-[auto]  sm:w-6/12 text-start">
                   {taskDeadline ? taskDeadline : "No deadline added"}
                 </span>
               ) : (
-                <span className="inline-flex justify-start items-start flex-col lg:flex-row w-6/12">
+                <span className="inline-flex justify-center lg:justify-start  items-start  w-[100%] sm:w-6/12 mt-3 sm:mt-[auto]">
                   <input
                     ref={detailYearlineRef}
                     type="text"
                     placeholder="Year"
                     defaultValue={year}
-                    className={`w-10/12 block font-normal  pl-2  lg:border-l-2 rounded-xs
+                    className={` block font-normal max-w-[33%] lg:max-w-[25%] pl-2  border-l-2 rounded-xs ml-6 sm:ml-4 lg:ml-3
              ${
                darkMode
                  ? "bg-primary text-light border-white"
@@ -360,7 +364,7 @@ const TaskDetail = () => {
                     placeholder="Month"
                     defaultValue={month}
                     style={{}}
-                    className={`w-10/12 block font-normal  pl-2  lg:border-l-2 rounded-xs
+                    className={` block font-normal max-w-[33%] lg:max-w-[25%]  pl-2  border-l-2 rounded-xs 
              ${
                darkMode
                  ? "bg-primary text-light border-white"
@@ -374,7 +378,7 @@ const TaskDetail = () => {
                     placeholder="Date"
                     defaultValue={date}
                     style={{}}
-                    className={`w-10/12 block font-normal pl-2   lg:border-l-2 rounded-xs
+                    className={` block font-normal pl-2 max-w-[33%] lg:max-w-[25%]   border-l-2 rounded-xs
                     ${
                       darkMode
                         ? "bg-primary text-light border-white"
@@ -386,24 +390,18 @@ const TaskDetail = () => {
               )}
             </p>
             {!editing ? (
-              <p
-                className={`pt-2  font-bold flex text-base items-center justify-center lg:justify-start`}
-              >
+              <p className="pt-2 flex  w-full sm:w-6/12 ml-3 sm:ml-5 items-center ">
                 {task?.completed ? (
                   <ImCheckboxChecked
-                    className={`mr-2 w-1/12 ${
-                      darkMode ? "text-light" : "text-dark"
-                    }`}
+                    className={` mr-7 ${darkMode ? "text-light" : "text-dark"}`}
                   />
                 ) : (
                   <ImCheckboxUnchecked
-                    className={`mr-2 w-1/12 ${
-                      darkMode ? "text-light" : "text-dark"
-                    }`}
+                    className={` mr-7 ${darkMode ? "text-light" : "text-dark"}`}
                   />
                 )}
                 <span
-                  className={`font-mediummr-2 w-5/12  ${
+                  className={`font-medium ${
                     darkMode ? "text-light" : "text-dark"
                   }`}
                 >
@@ -411,19 +409,19 @@ const TaskDetail = () => {
                 </span>
               </p>
             ) : (
-              <p className="pt-2 text-primary font-bold flex text-base items-center justify-center lg:justify-start">
+              <p className="pt-2 text-primary font-bold flex text-base items-center justify-start lg:justify-start gap-x-4 sm:gap-x-3">
                 <input
                   ref={checkCompleteRef}
                   defaultChecked={task?.completed}
                   id="checkComplete"
                   type="checkbox"
-                  className={`mr-2 w-1/12  ${
+                  className={`mx-3 sm:mx-5   ${
                     darkMode ? "accent-light" : "accent-dark"
                   } cursor-pointer`}
                 />
                 <label
                   htmlFor="checkComplete"
-                  className={`font-mediummr-2 w-5/12 ${
+                  className={`font-mediummr-2  ${
                     darkMode ? "text-light" : "text-dark"
                   } `}
                 >
@@ -494,14 +492,14 @@ const TaskDetail = () => {
 
         <div className="lg:w-2/5">
           {!editing ? (
-            <div>
+            <div className="max-h-[32rem]">
               {task?.image ? (
                 <img
                   src={task?.image}
                   id="pro-img"
                   className="rounded-none lg:rounded-lg shadow-2xl hidden lg:block"
                   alt="Task "
-                  style={{ height: "32rem", width: "29rem" }}
+                  style={{ maxHeight: "32rem", maxWidth: "100%" }}
                 />
               ) : (
                 <div

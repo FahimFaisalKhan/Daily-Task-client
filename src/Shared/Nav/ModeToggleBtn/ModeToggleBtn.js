@@ -10,7 +10,17 @@ const ModeToggleBtn = () => {
   const handleMode = async () => {
     await dispatch(setDarkMode({ darkMode: !currentModeIsDark }));
     setCurrentModeIsDark(!currentModeIsDark);
+
+    localStorage.setItem("darkMode", !currentModeIsDark);
   };
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem("darkMode")) !== null) {
+      dispatch(
+        setDarkMode({ darkMode: JSON.parse(localStorage.getItem("darkMode")) })
+      );
+      setCurrentModeIsDark(JSON.parse(localStorage.getItem("darkMode")));
+    }
+  }, [currentModeIsDark, dispatch]);
 
   return (
     <div className="scale-[.3] h-5 w-20">
@@ -23,7 +33,7 @@ const ModeToggleBtn = () => {
       />
       <label
         for="toggle"
-        className="toggle--label  -left-20 -top-10"
+        className="toggle--label  -left-20 -top-10 cursor-pointer"
         onClick={handleMode}
       >
         <span className="toggle--label-background"></span>

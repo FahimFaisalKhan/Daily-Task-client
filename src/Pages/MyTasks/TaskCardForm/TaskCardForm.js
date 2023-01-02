@@ -52,8 +52,73 @@ const TaskCardForm = ({
       }
     }
   };
+  const handleSubmit = () => {
+    setAdding(true);
+    const deadline = new Date(selectedDay);
+    const files = fileRef.current.files;
+    const userEmail = user?.email;
+    if (files.length) {
+      const formData = new FormData();
+
+      formData.append("image", files[0]);
+      axios
+        .post(
+          `https://api.imgbb.com/1/upload?key=e6e425086757be46a714cf930fe529d6`,
+          formData
+        )
+        .then((res) => {
+          console.log(res);
+          const image = res.data.data.display_url;
+          axios
+            .put("https://daily-task-server-fahimfaisalkhan.vercel.app/tasks", {
+              taskName: titleRef.current.value,
+              description: desRef.current.value,
+              image: image,
+              deadline: deadline,
+              id: currentlyAddingId,
+              userEmail,
+            })
+            .then(({ data }) => {
+              console.log(data);
+              setQuickAddHidden(true);
+              setClickedOutside(false);
+              refetch();
+              setAdding(false);
+            })
+            .catch((err) => {
+              console.log(err.message);
+
+              setAdding(false);
+            });
+        })
+        .catch((err) => {
+          console.log(err.message);
+          setAdding(false);
+        });
+    } else {
+      axios
+        .put("https://daily-task-server-fahimfaisalkhan.vercel.app/tasks", {
+          taskName: titleRef.current.value,
+          description: desRef.current.value,
+
+          deadline: deadline,
+          id: currentlyAddingId,
+          userEmail,
+        })
+        .then(({ data }) => {
+          console.log(data);
+          setQuickAddHidden(true);
+          setClickedOutside(false);
+          refetch();
+          setAdding(false);
+        })
+        .catch((err) => {
+          console.log(err.message);
+          setAdding(false);
+        });
+    }
+  };
   useEffect(() => {
-    console.log(clickedOutside);
     if (clickedOutside) {
       setAdding(true);
       const deadline = new Date(selectedDay);
@@ -132,6 +197,7 @@ const TaskCardForm = ({
     refetch,
     user?.email,
   ]);
+
   return (
     <div className="mt-12 mb-16">
       <div
@@ -150,7 +216,7 @@ const TaskCardForm = ({
           />
         )}
 
-        <div className={`${addingTask && "opacity-0 w-0"} `}>
+        <div className={`${addingTask ? "opacity-0 w-0" : "w-full"} `}>
           <input
             ref={titleRef}
             onKeyDown={handleTitle}
@@ -169,30 +235,38 @@ const TaskCardForm = ({
              bg-white sm:text-base focus:outline-none focus:ring-transparent focus:border-transparent 
              "
           />
-          <div className="flex">
-            <div
-              className="flex mx-3 my-2 cursor-pointer "
-              onClick={() => setModalHidden(false)}
-            >
-              <SlCalender />
-            </div>
-            <div className=" px-3 py-2 ">
-              <div className="relative  ">
-                <MdAttachFile
-                  size={17}
-                  className="absolute top-0 left-0 cursor-pointer  z-50"
-                  onClick={() => {
-                    fileRef.current.click();
-                  }}
-                />
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/png, image/gif, image/jpeg"
-                  className="w-3 h-4 absolute top-0 left-0 opacity-0   cursor-pointer z-30"
-                />
+          <div className="flex  justify-between ">
+            <div className="flex">
+              <div
+                className="flex mx-3 my-2 cursor-pointer "
+                onClick={() => setModalHidden(false)}
+              >
+                <SlCalender />
+              </div>
+              <div className=" px-3 py-2 ">
+                <div className="relative  ">
+                  <MdAttachFile
+                    size={17}
+                    className="absolute top-0 left-0 cursor-pointer  z-50"
+                    onClick={() => {
+                      fileRef.current.click();
+                    }}
+                  />
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/png, image/gif, image/jpeg"
+                    className="w-3 h-4 absolute top-0 left-0 opacity-0   cursor-pointer z-30"
+                  />
+                </div>
               </div>
             </div>
+            <button
+              onClick={handleSubmit}
+              className="px-5 py-2 bg-primary text-light mt-5 mr-3 rounded-lg"
+            >
+              Save
+            </button>
           </div>
 
           <div

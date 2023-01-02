@@ -58,7 +58,13 @@ const MyTasks = () => {
 
   return (
     <div className="container mx-auto my-20 min-h-[100vh] ">
-      <h2 className="text-2xl text-dark mb-5">My Tasks </h2>
+      <h2
+        className={`text-2xl ${
+          darkMode ? "text-light" : "text-dark"
+        } mb-5 font-semibold`}
+      >
+        {tasks.length > 0 ? "My Tasks" : "No Tasks Yet !"}
+      </h2>
 
       <button
         onClick={() => {
