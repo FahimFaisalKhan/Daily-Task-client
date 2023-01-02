@@ -10,11 +10,13 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  FacebookAuthProvider,
 } from "firebase/auth";
 import { app } from "../configs/firebase.config";
 
 const auth = getAuth(app);
 const gProv = new GoogleAuthProvider();
+const fProv = new FacebookAuthProvider();
 const initialState = {
   userData: null,
   initialized: false,
@@ -125,6 +127,17 @@ export const googleSign = () => async (dispatch) => {
   } catch (err) {
     console.log(err.message);
     await dispatch(setGoogleLoading({ googleLoading: false }));
+    return { succeded: false, error: err.message };
+  }
+};
+
+export const fbSignin = () => async (dispatch) => {
+  try {
+    const creds = await signInWithPopup(auth, fProv);
+
+    await dispatch(createUser({ user: creds.user.toJSON() }));
+    return { succeded: true };
+  } catch (err) {
     return { succeded: false, error: err.message };
   }
 };

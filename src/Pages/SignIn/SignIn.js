@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { googleSign, logInUser, selectUser } from "../../redux/authSlice";
+import {
+  fbSignin,
+  googleSign,
+  logInUser,
+  selectUser,
+} from "../../redux/authSlice";
 import { MdEmail } from "react-icons/md";
 import ClipLoader from "react-spinners/ClipLoader";
 
@@ -13,6 +18,7 @@ const SignIn = () => {
   const { loading, userLoading, googleLoading, darkMode } =
     useSelector(selectUser);
   useMode(darkMode);
+  const [fbLoading, setFbLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,6 +51,19 @@ const SignIn = () => {
       toast.success("Signed in Successfully");
       navigate(redirectRoute);
     } else {
+      toast.error(error);
+    }
+  };
+  const handleFbSignIn = async () => {
+    setFbLoading(true);
+    const { succeded, error } = await dispatch(fbSignin());
+    if (succeded) {
+      toast.success("Signed in Successfully");
+      setFbLoading(false);
+      navigate("/");
+    } else {
+      setFbLoading(false);
+      console.log(error);
       toast.error(error);
     }
   };
@@ -180,32 +199,38 @@ const SignIn = () => {
           )}
         </button>
         <button
+          onClick={handleFbSignIn}
           type="button"
           className="w-10/12 lg:w-7/12 mt-7  text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-[#3b5998]/55  mb-2"
         >
-          <svg
-            className="mr-2 -ml-1 w-4 h-4"
-            aria-hidden="true"
-            focusable="false"
-            data-prefix="fab"
-            data-icon="facebook-f"
-            role="img"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 320 512"
-          >
-            <path
-              fill="currentColor"
-              d="M279.1 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.4 0 225.4 0c-73.22 0-121.1 44.38-121.1 124.7v70.62H22.89V288h81.39v224h100.2V288z"
-            ></path>
-          </svg>
-          Sign in with Facebook
-        </button>
-        <button
-          type="button"
-          className="w-10/12 lg:w-7/12 mt-6  text-white bg-primary hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-primary/50 font-medium rounded-md text-md px-6 py-3 text-center inline-flex items-center justify-center dark:focus:ring-primary/55  mb-2 gap-x-2"
-        >
-          <MdEmail className="mr-4 -ml-4" />
-          <span> Sign up with Email</span>
+          {fbLoading ? (
+            <ClipLoader
+              color="#a69cac"
+              aria-label="Loading Spinner"
+              data-testid="loader"
+              loading={true}
+              size={25}
+            />
+          ) : (
+            <>
+              <svg
+                className="mr-2 -ml-1 w-4 h-4"
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="fab"
+                data-icon="facebook-f"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 320 512"
+              >
+                <path
+                  fill="currentColor"
+                  d="M279.1 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.4 0 225.4 0c-73.22 0-121.1 44.38-121.1 124.7v70.62H22.89V288h81.39v224h100.2V288z"
+                ></path>
+              </svg>
+              Sign in with Facebook
+            </>
+          )}
         </button>
       </div>
     </div>
